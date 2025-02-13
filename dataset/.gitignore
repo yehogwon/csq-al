@@ -1,0 +1,13 @@
+CIFAR10
+CIFAR100
+CUB
+TinyImageNet
+ImageNet32/*
+ImageNet64/*
+
+# Handcrafted datasets
+CIFAR100N
+CIFAR100LT
+
+# ImageNet64 Preprocessing
+!ImageNet64/proc.py
