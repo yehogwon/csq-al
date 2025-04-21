@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="This paper presents a cost-efficient active learning framework for classification featuring a novel query design.">
+  <meta name="keywords" content="AL, CSQ, Active Learning">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Candidate Set Query for AL</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+
+  <!-- Add medium-zoom library -->
+  <script src="https://unpkg.com/medium-zoom/dist/medium-zoom.min.js"></script>
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      jax: ["input/TeX", "output/HTML-CSS"],
+      extensions: ["tex2jax.js"],
+      "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] },
+      tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], displayMath: [ ["$$","$$"], ["\\[", "\\]"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno" },
+      TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } } },
+      options: { ignoreHtmlClass: 'no-mathjax', processHtmlClass: 'mathjax-process'},
+      messageStyle: "none",
+      displayAlign: "left"
+    });
+  </script>    
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js"></script>
+</head>
+<body>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="https://yehogwon.github.io/">
+      <span class="icon">
+          <i class="fas fa-home"></i>
+      </span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Enhancing Cost Efficiency in Active Learning <br> with Candidate Set Query</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://yehogwon.github.io/">Yeho Gwon<sup>*</sup></a>
+            </span>
+            <span class="author-block">
+              <a href="https://sehyun03.github.io/">Sehyun Hwang<sup>*</sup></a>
+            </span>
+            <span class="author-block">
+              <a href="https://cskhy16.github.io/">Hoyoung Kim<sup></sup></a>
+            </span>
+            <span class="author-block">
+              <a href="https://sites.google.com/view/jungseulok">Jungseul Ok<sup></sup></a>
+            </span>
+            <span class="author-block">
+              <a href="https://suhakwak.github.io/">Suha Kwak<sup></sup></a>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            (* indicates equal contribution)
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+                <a href="https://www.postech.ac.kr/eng"><sup></sup>POSTECH</a>
+            </span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="./static/pdf/paper.pdf"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2502.06209"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/yehogwon/csq"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+              <!-- Bibtex -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            This paper introduces a cost-efficient active learning (AL) framework for classification, featuring a novel query design called <i>candidate set query</i>. Unlike traditional AL queries requiring the oracle to examine all possible classes, our method narrows down the set of candidate classes likely to include the ground-truth class, significantly reducing the search space and labeling cost. Moreover, we leverage conformal prediction to dynamically generate small yet reliable candidate sets, adapting to model enhancement over successive AL rounds. To this end, we introduce an acquisition function designed to prioritize data points that offer high information gain at lower cost. Empirical evaluations on CIFAR-10, CIFAR-100, and ImageNet64x64 demonstrate the effectiveness and scalability of our framework. Notably, it reduces labeling cost by 42% on ImageNet64x64.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Teaser Image -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3">Motivation</h2>
+        <div class="publication-teaser">
+          <img src="./static/images/teaser.png" alt="CSQ Teaser">
+        </div>
+        <div class="caption">
+          <p>
+            <span class="figure-label">Figure 1</span>. <span style="font-style: italic;">(left)</span> Comparison between the conventional query (CQ) and the proposed <span style="font-style: italic;">candidate set query</span> (CSQ). By narrowing the size of candidate set, CSQ significantly reduces the labeling time.
+            <span style="font-style: italic;">(right)</span> The result of our user study. Narrowing the search space of annotators not only reduces the annotation cost (<span style="font-style: italic;">i.e.</span>, labeling time), but also improves the annotation quality (<span style="font-style: italic;">i.e.</span>, accuracy). This potentially results in a better dataset construction. 
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Teaser Image -->
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- AL Image -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3">Active Learning</h2>
+        <div class="publication-teaser">
+          <img src="./static/images/al.png" alt="Active Learning">
+        </div>
+        <div class="caption">
+          <p>
+            <span class="figure-label">Figure 2</span>. Active learning aims at reducing the labeling burden by annotating only necessary samples until the desired model performance is achieved. From a small initially labeled dataset, it repeatedly selects the most informative samples and asks the oracle to label them. Traditional active learning focuses on the selection of informative samples, driven by an acquisition function, whereas our work focuses both on the design of an effective acquisition function <span style="font-style: italic;">(selection)</span> and the process of getting the selected samples labeled <span style="font-style: italic;">(query)</span>.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ AL Image -->
+  </div>
+</section>
+
+<!-- TODO: Add Method section with animation
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3">Method</h2>
+        <div class="publication-teaser">
+          <img src="./static/images/al.png" alt="Active Learning">
+        </div>
+        <div class="caption">
+          <p>
+            <span class="figure-label">Figure 2</span>. Active learning aims at reducing the labeling burden by annotating only necessary samples until the desired model performance is achieved. From a small initially labeled dataset, it repeatedly selects the most informative samples and asks the oracle to label them. Traditional active learning focuses on the selection of informative samples, driven by an acquisition function, whereas our work focuses both on the design of an effective acquisition function <span style="font-style: italic;">(selection)</span> and the process of getting the selected samples labeled <span style="font-style: italic;">(query)</span>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Experiment Results -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3">Experiment Results</h2>
+        
+        <!-- Main Results subsection -->
+        <div class="subsection-title">Main Results</div>
+        <div class="publication-teaser">
+          <img src="./static/images/main.png" alt="Active Learning">
+        </div>
+        <div class="caption">
+          <p>
+            <span class="figure-label">Figure 3</span>. Accuracy (%) versus relative labeling cost (%) for conventional query (CQ) and the proposed candidate set query (CSQ) combined with different sampling strategies. 
+            CSQ strategies combined with the proposed cost-efficient sampling (<span style="color: blue;">blue</span> lines) consistently outperform CQ baselines (<span style="color: red;">red</span> lines) by a significant margin across various budgets, acquisition functions, and datasets. You can find the zoomed-in version in the paper.
+          </p>
+        </div>
+
+        <!-- Ablation Studies subsection -->
+        <div class="subsection-title">Ablation Studies</div>
+
+        <div class="publication-teaser">
+          <img src="./static/images/comp_anal.png" alt="Component Analysis">
+        </div>
+        <div class="caption">
+          <p>
+            <span class="figure-label">Figure 4</span>. 
+            (a) Contribution of each component of our method, measured by accuracy (%) versus relative labeling cost (%) <span style="font-style: italic;">(left)</span>, and relative labeling cost (%) versus AL round <span style="font-style: italic;">(right)</span>. All components of our method lead to steady performance improvement over successive AL rounds. 
+            (b) Relative labeling cost (%) at fifth round with varying calibraiton set sizes $n_\text{cal}$. Our method shows robust performance with varying calibraiton set sizes.
+          </p>
+        </div>
+
+        <div class="publication-teaser">
+          <img src="./static/images/query_design.png" alt="Query Design">
+        </div>
+        <div class="caption">
+          <p>
+            <span class="figure-label">Figure 5</span>. Impact of the candidate set design. We compare Conventional (all classes), Top1 (top-1 most confident class), Top10 (top10 most confident classes), and Conformal(our method with fixed $\alpha=0.1$), and Oracle(the smallest candidate set that contains the ground-truth class).
+            Our method reliably surpasses the baselines and delivers a substantial reduction in labeling cost compared to the baselines. We note that Oracle is an unattainable upper bound requiring knowledge of the ground truth.
+            Also, our candidate set effectively includes the ground-truth class in over 90% of cases, even when the model accuracy is low. 
+        </div>
+
+        <!-- Qualitative Results subsection -->
+        <div class="subsection-title">Qualitative Results</div>
+        <div class="publication-teaser">
+          <img src="./static/images/qual.png" alt="Qualitative Results">
+        </div>
+        <div class="caption">
+          <p>
+            <span class="figure-label">Figure 6</span>. Example results of constructed candidate sets along with input images on ImageNet64x64. The ground-truth class is highlighted in <span style="color: red;">red</span> (best viewed in color). 
+            For easy samples, the candidate set is small to minimize the labeling cost, while for hard samples, the candidate set is expanded to include the ground-truth class.
+          </p>
+        </div>
+
+      </div>
+    </div>
+    <!--/ Experiment Results -->
+  </div>
+</section>
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@article{gwon2025enhancing,
+    title={Enhancing Cost Efficiency in Active Learning with Candidate Set Query},
+    author={Gwon, Yeho and Hwang, Sehyun and Kim, Hoyoung and Ok, Jungseul and Kwak, Suha},
+    journal={arXiv preprint arXiv:2502.06209},
+    year={2025},
+    primaryClass={cs.LG},
+    url={https://arxiv.org/abs/2502.06209}
+}</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <a class="icon-link" href="https://arxiv.org/abs/2502.06209">
+        <i class="ai ai-arxiv"></i>
+      </a>
+      <a class="icon-link" href="https://github.com/yehogwon/csq" class="external-link" disabled>
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is licensed under a <a rel="license"
+                                               href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+          <p>
+            The source code of this website is adopted from <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
