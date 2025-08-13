@@ -145,7 +145,7 @@ body {
 
 /* Add these new styles */
 .container.is-max-desktop {
-  max-width: 45% !important;
+  max-width: 70% !important;
 }
 
 .columns.is-centered {
